@@ -6,7 +6,7 @@
 /*   By: seapark <seapark@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/25 16:39:49 by seapark          ###   ########.fr       */
+/*   Updated: 2021/06/27 21:49:58 by seapark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,69 +32,82 @@ pthread_mutex_t		*init_forks(int number_of_philosophers)
 	return (forks);
 }
 
-void			*test1(void *philo)
+t_arg				init_s_arg(char **av)
 {
-	t_philo			*p;
-	pthread_mutex_t	*lfork;
-	pthread_mutex_t	*rfork;
-	struct timeval	time_s;
-	long int		time;
-	long int		created;
+	t_arg 			arg;
 
-	p = (t_philo *)philo;
-	lfork = (*p).lfork;
-	rfork = (*p).rfork;
-
-	gettimeofday(&(*p).created, NULL);
-	created = (long int)(*p).created.tv_sec * (long int)1000000 + (long int)(*p).created.tv_usec;
-
-
-    pthread_mutex_lock(lfork);
-    pthread_mutex_lock(rfork);
-	
-	
-	gettimeofday(&time_s, NULL);
-	time = (long int)time_s.tv_sec * (long int)1000000 + (long int)time_s.tv_usec;
-
-	printf("철학자%d : 냠이%ld\n", (*p).philo_num, time - created);
-
-    pthread_mutex_unlock(lfork);
-    pthread_mutex_unlock(rfork);
-	return ((void*)0);
+	arg.number_of_philosophers = ft_atoi(av[1]);
+	arg.time_to_die = ft_atoi(av[2]);
+	arg.time_to_eat = ft_atoi(av[3]);
+	arg.time_to_sleep = ft_atoi(av[4]);
+	return (arg);
 }
 
-t_philo_time		set_philo_time(char **av)
+void				init_created_philo(t_philo *p)
 {
-	t_philo_time philo_time;
+	struct timeval tv;
 
-	philo_time.time_to_die = ft_atoi(av[2]);
-	philo_time.time_to_eat = ft_atoi(av[3]);
-	philo_time.time_to_sleep = ft_atoi(av[4]);
-	return (philo_time);
+	gettimeofday(&tv, NULL);
+	// printf("%lu.%d\n",tv.tv_sec,tv.tv_usec);
+	p->created = change_to_ms(tv);
+	// printf("%llu\n",p->created);
 }
 
-int		start_philosophers(int number_of_philosophers, pthread_mutex_t *forks)
+t_philo				*init_philo(t_arg *arg)
 {
 	t_philo			*philo;
+	pthread_mutex_t	*check_died;
+	pthread_mutex_t	*print_m;
 	int				i;
-    int				status;
+	pthread_t		*monitor;
+	pthread_mutex_t	*forks;
+
+	philo = (t_philo *)malloc(sizeof(t_philo) * arg->number_of_philosophers);
+	monitor = (pthread_t *)malloc(sizeof(pthread_t));
+	check_died = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+	print_m = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));	
+	if (!(forks = init_forks(arg->number_of_philosophers)))
+		return (NULL);
+	if (pthread_mutex_init(print_m, NULL) != 0)
+		return (NULL);
+	if (pthread_mutex_init(check_died, NULL) != 0)
+		return (NULL);
+	pthread_mutex_lock(check_died);
+	i = 0;
+	while (i < arg->number_of_philosophers)
+	{
+		philo[i].philo_num = i + 1;
+		philo[i].print_m = print_m;
+		philo[i].check_died = check_died;
+		philo[i].monitor = monitor;
+		philo[i].arg = arg;
+		philo[i].lfork = &(forks[i]);
+		philo[i].rfork = &(forks[(i + 1) % arg->number_of_philosophers]);
+		i++;
+	}
+	return (philo);
+}
+
+int					start_philosophers(t_philo *p)
+{
+	int				i;
+	int				status;
 	
 	i = 0;
-	philo = (t_philo *)malloc(sizeof(t_philo *) * number_of_philosophers);
-	while (i < number_of_philosophers)
+	status = 0;
+	while (i < p->arg->number_of_philosophers)
 	{
-		philo[i].philo_num = i;
-		philo[i].lfork = &forks[i];
-		philo[i].rfork = &forks[(i + 1) % number_of_philosophers];
-		if (pthread_create(&philo[i].pthread, NULL, &test1, (void *)&philo[i]) != 0)
+		if (pthread_create(&p[i].pthread, NULL, &sit_at_a_round_table, (void *)&p[i]) != 0)
 			return (1);
+		pthread_detach(p[i].pthread);
 		i++;
 	}
-	i = 0;
-	while (i < number_of_philosophers)
-	{
-		pthread_join(philo[i].pthread, (void **)&status);
-		i++;
-	}
+	if (pthread_create(p->monitor, NULL, &monitoring, (void *)p) != 0)
+		return (1);
+	// pthread_join(*p->monitor, (void **)&status);
+	// usleep(1000);
+	// pthread_mutex_lock(p->check_died);
+	pthread_mutex_lock(p->check_died);
+	pthread_mutex_unlock(p->check_died);
 	return (0);
 }
