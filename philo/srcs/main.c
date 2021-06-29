@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: seapark <seapark@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/27 21:28:02 by seapark          ###   ########.fr       */
+/*   Updated: 2021/06/29 23:30:31 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ int				check_arg(int ac, char **av)
 {
 	int	i;
 	int j;
-	
-	if (ac != 5)
+
+	if (!(ac == 5 || ac == 6))
 		return (exit_error("e: bad arguments\n"));
 	i = 1;
-	while (av[i])
+	while (i < ac)
 	{
 		j = 0;
 		while (av[i][j])
@@ -41,7 +41,7 @@ int				main(int ac, char **av)
 
 	if (check_arg(ac, av))
 		return (0);
-	arg = init_s_arg(av);
+	arg = init_s_arg(ac, av);
 	if (!(p = init_philo(&arg)))
 		return (exit_error("e: Failed to initialize fork\n"));
 	if (start_philosophers(p))

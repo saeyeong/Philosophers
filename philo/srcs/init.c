@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: seapark <seapark@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/27 21:49:58 by seapark          ###   ########.fr       */
+/*   Updated: 2021/06/30 00:08:10 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ pthread_mutex_t		*init_forks(int number_of_philosophers)
 	return (forks);
 }
 
-t_arg				init_s_arg(char **av)
+t_arg				init_s_arg(int ac, char **av)
 {
 	t_arg 			arg;
 
@@ -40,6 +40,11 @@ t_arg				init_s_arg(char **av)
 	arg.time_to_die = ft_atoi(av[2]);
 	arg.time_to_eat = ft_atoi(av[3]);
 	arg.time_to_sleep = ft_atoi(av[4]);
+	if (ac == 6)
+		arg.limit_of_eat = ft_atoi(av[5]);
+	else
+		arg.limit_of_eat = -1;
+	arg.death_philo_count = 0;
 	return (arg);
 }
 
@@ -48,9 +53,7 @@ void				init_created_philo(t_philo *p)
 	struct timeval tv;
 
 	gettimeofday(&tv, NULL);
-	// printf("%lu.%d\n",tv.tv_sec,tv.tv_usec);
 	p->created = change_to_ms(tv);
-	// printf("%llu\n",p->created);
 }
 
 t_philo				*init_philo(t_arg *arg)
@@ -76,6 +79,7 @@ t_philo				*init_philo(t_arg *arg)
 	i = 0;
 	while (i < arg->number_of_philosophers)
 	{
+		philo[i].how_many_eat = 0;
 		philo[i].philo_num = i + 1;
 		philo[i].print_m = print_m;
 		philo[i].check_died = check_died;
@@ -92,6 +96,7 @@ int					start_philosophers(t_philo *p)
 {
 	int				i;
 	int				status;
+	struct timeval	tv;
 	
 	i = 0;
 	status = 0;
@@ -99,14 +104,13 @@ int					start_philosophers(t_philo *p)
 	{
 		if (pthread_create(&p[i].pthread, NULL, &sit_at_a_round_table, (void *)&p[i]) != 0)
 			return (1);
-		pthread_detach(p[i].pthread);
+		gettimeofday(&tv, NULL);
+		p[i].created = change_to_ms(tv);
 		i++;
 	}
 	if (pthread_create(p->monitor, NULL, &monitoring, (void *)p) != 0)
 		return (1);
-	// pthread_join(*p->monitor, (void **)&status);
-	// usleep(1000);
-	// pthread_mutex_lock(p->check_died);
+	pthread_detach(*p->monitor);
 	pthread_mutex_lock(p->check_died);
 	pthread_mutex_unlock(p->check_died);
 	return (0);

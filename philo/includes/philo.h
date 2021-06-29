@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: seapark <seapark@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:40:42 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/27 21:29:56 by seapark          ###   ########.fr       */
+/*   Updated: 2021/06/30 00:06:59 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define STATE_SLEEP	2
 # define STATE_THINK	3
 # define STATE_DIED		4
+# define STATE_EAT_ALL	5
 
 typedef struct			s_arg
 {
@@ -33,10 +34,13 @@ typedef struct			s_arg
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
+	int					limit_of_eat;
+	int					death_philo_count;
 }						t_arg;
 
 typedef struct			s_philo
 {
+	int					how_many_eat;
 	int					philo_num;
 	t_arg				*arg;
 	long long			created;
@@ -53,7 +57,7 @@ int						ft_atoi(const char *s);
 int						ft_strlen(const char *s);
 int						ft_isdigit(int c);
 int						exit_error(char const *str);
-t_arg					init_s_arg(char **av);
+t_arg					init_s_arg(int ac, char **av);
 pthread_mutex_t			*init_forks(int number_of_philosophers);
 void					init_created_philo(t_philo *p);
 int						start_philosophers();
@@ -66,5 +70,7 @@ void					sleep_philo(t_philo *p);
 void					think_philo(t_philo *p);
 void					*monitoring(void *p);
 t_philo					*init_philo(t_arg *arg);
+long long				now_time(void);
+long long				calculate_time(long long past, long long now);
 
 #endif
