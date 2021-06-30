@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
+/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/30 00:08:10 by ukim             ###   ########.fr       */
+/*   Updated: 2021/06/30 14:30:34 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-pthread_mutex_t		*init_forks(int number_of_philosophers)
+pthread_mutex_t		*init_forks(int num_phi)
 {
 	pthread_mutex_t	*forks;
 	int				i;
 
-	if (!(forks = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t) * number_of_philosophers)))
+	if (!(forks = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t) * num_phi)))
 		return (NULL);
 	i = 0;
-	while (i < number_of_philosophers)
+	while (i < num_phi)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) < 0)
 		{
@@ -34,7 +34,7 @@ pthread_mutex_t		*init_forks(int number_of_philosophers)
 
 t_arg				init_s_arg(int ac, char **av)
 {
-	t_arg 			arg;
+	t_arg			arg;
 
 	arg.number_of_philosophers = ft_atoi(av[1]);
 	arg.time_to_die = ft_atoi(av[2]);
@@ -58,36 +58,29 @@ void				init_created_philo(t_philo *p)
 
 t_philo				*init_philo(t_arg *arg)
 {
-	t_philo			*philo;
-	pthread_mutex_t	*check_died;
-	pthread_mutex_t	*print_m;
 	int				i;
+	t_philo			*philo;
 	pthread_t		*monitor;
-	pthread_mutex_t	*forks;
+	pthread_mutex_t	*prin_fork_chdie[3];
 
 	philo = (t_philo *)malloc(sizeof(t_philo) * arg->number_of_philosophers);
 	monitor = (pthread_t *)malloc(sizeof(pthread_t));
-	check_died = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-	print_m = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));	
-	if (!(forks = init_forks(arg->number_of_philosophers)))
+	prin_fork_chdie[2] = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+	prin_fork_chdie[0] = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+	if (!(prin_fork_chdie[1] = init_forks(arg->number_of_philosophers)))
 		return (NULL);
-	if (pthread_mutex_init(print_m, NULL) != 0)
+	if (pthread_mutex_init(prin_fork_chdie[0], NULL) != 0)
 		return (NULL);
-	if (pthread_mutex_init(check_died, NULL) != 0)
+	if (pthread_mutex_init(prin_fork_chdie[2], NULL) != 0)
 		return (NULL);
-	pthread_mutex_lock(check_died);
-	i = 0;
-	while (i < arg->number_of_philosophers)
+	pthread_mutex_lock(prin_fork_chdie[2]);
+	i = -1;
+	while (++i < arg->number_of_philosophers)
 	{
-		philo[i].how_many_eat = 0;
-		philo[i].philo_num = i + 1;
-		philo[i].print_m = print_m;
-		philo[i].check_died = check_died;
-		philo[i].monitor = monitor;
 		philo[i].arg = arg;
-		philo[i].lfork = &(forks[i]);
-		philo[i].rfork = &(forks[(i + 1) % arg->number_of_philosophers]);
-		i++;
+		philo[i].rfork = &(prin_fork_chdie[1][(i + 1) \
+		% arg->number_of_philosophers]);
+		init_philoo(&philo[i], monitor, prin_fork_chdie, i);
 	}
 	return (philo);
 }
@@ -97,12 +90,13 @@ int					start_philosophers(t_philo *p)
 	int				i;
 	int				status;
 	struct timeval	tv;
-	
+
 	i = 0;
 	status = 0;
 	while (i < p->arg->number_of_philosophers)
 	{
-		if (pthread_create(&p[i].pthread, NULL, &sit_at_a_round_table, (void *)&p[i]) != 0)
+		if (pthread_create(&p[i].pthread, NULL, \
+		&sit_at_a_round_table, (void *)&p[i]) != 0)
 			return (1);
 		gettimeofday(&tv, NULL);
 		p[i].created = change_to_ms(tv);

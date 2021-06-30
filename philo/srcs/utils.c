@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: seapark <seapark@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 17:26:25 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/27 16:42:49 by seapark          ###   ########.fr       */
+/*   Updated: 2021/06/30 13:08:17 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+void		think_philo(t_philo *p)
+{
+	print_state(p, STATE_THINK);
+}
 
 int			ft_strlen(const char *s)
 {

@@ -10,14 +10,14 @@ HEADER = includes
 
 CC = gcc
 
-CFLAG = -Wall -Wextra -Werror -fsanitize=address 
+CFLAG = -Wall -Wextra -Werror
 
 IPTHREAD= -lpthread
 
 OBJ = $(SRCS:.c=.o)
 
 %.o: %.c
-	$(CC) $(CFLAG) -g -c -o $@ $<
+	$(CC) $(CFLAG) -c -o $@ $<
 
 all: $(NAME)
 

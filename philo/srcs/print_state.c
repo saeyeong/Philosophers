@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   print_state.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
+/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:07:27 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/29 21:41:53 by ukim             ###   ########.fr       */
+/*   Updated: 2021/06/30 13:13:45 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-long long		calculate_time(long long past, long long now)
+long long				calculate_time(long long past, long long now)
 {
 	return (now - past);
 }
 
-long long	now_time(void)
+long long				now_time(void)
 {
 	struct timeval	current_time;
 
@@ -25,7 +25,7 @@ long long	now_time(void)
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
-long long					change_to_ms(struct timeval tv)
+long long				change_to_ms(struct timeval tv)
 {
 	long long				current_us;
 
@@ -52,7 +52,7 @@ void					print_state(t_philo *p, int state)
 	else if (state == STATE_THINK)
 		printf("%llu %d is thinking\n", timestamp_ms, p->philo_num);
 	else if (state == STATE_EAT_ALL)
-		printf("%llu %d die with happy\n", timestamp_ms, p->philo_num);
+		printf("%llu %d died with happy\n", timestamp_ms, p->philo_num);
 	else if (state == STATE_DIED)
 	{
 		printf("%llu %d died\n", timestamp_ms, p->philo_num);

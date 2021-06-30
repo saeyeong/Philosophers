@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
+/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:40:42 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/30 00:06:59 by ukim             ###   ########.fr       */
+/*   Updated: 2021/06/30 14:29:46 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,7 @@ void					*monitoring(void *p);
 t_philo					*init_philo(t_arg *arg);
 long long				now_time(void);
 long long				calculate_time(long long past, long long now);
-
+void					think_philo(t_philo *p);
+void					init_philoo(t_philo *p, pthread_t *monitor,\
+pthread_mutex_t **prin_fork_chdie, int i);
 #endif
