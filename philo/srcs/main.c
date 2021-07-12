@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/06/30 16:20:09 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/12 16:18:20 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ int				main(int ac, char **av)
 	arg = init_s_arg(ac, av);
 	if (!(p = init_philo(&arg)))
 		return (exit_error("e: Failed to initialize fork\n"));
-	if (ft_atoi(av[1]) <= 1 || ft_atoi(av[1]) > 200)
-		return (exit_error("e: philosopher should be > 1 and <= 200\n"));
+	//if (ft_atoi(av[1]) <= 1 || ft_atoi(av[1]) > 200)
+	//	return (exit_error("e: philosopher should be > 1 and <= 200\n"));
 	if (start_philosophers(p))
 		return (exit_error("e: runtime error\n"));
 	return (0);
