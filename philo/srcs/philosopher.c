@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/26 15:42:36 by seapark           #+#    #+#             */
-/*   Updated: 2021/06/30 14:16:58 by ukim             ###   ########.fr       */
+/*   Created: 2021/06/26 15:42:36 by ukim              #+#    #+#             */
+/*   Updated: 2021/06/30 18:40:53 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void				*monitoring(void *philo)
 	struct timeval	time_now;
 
 	p = (t_philo *)philo;
-	usleep(p->arg->time_to_die * 1100);
+	usleep(p->arg->time_to_die * 1000);
 	while (1)
 	{
 		i = -1;
