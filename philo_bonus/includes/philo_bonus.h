@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:40:42 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:34:08 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 20:50:19 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef struct			s_common_info
 	int					time_to_sleep;
 	int					limit_of_eat;
 	int					death_philo_count;
-	pthread_mutex_t		*print_m;
+	sem_t				*print_s;
 	pthread_t			*monitor;
 }						t_common_info;
 
@@ -47,9 +47,6 @@ typedef struct			s_philo
 	int					philo_num;
 	long long			created;
 	struct timeval		last_meal;
-	pthread_t			pthread;
-	pthread_mutex_t		*lfork;
-	pthread_mutex_t		*rfork;
 	t_common_info		*info;
 }						t_philo;
 
@@ -57,9 +54,8 @@ int						ft_atoi(const char *s);
 int						ft_strlen(const char *s);
 int						ft_isdigit(int c);
 int						exit_error(char const *str);
-t_common_info			*init_common_mutex(t_common_info *info);
 t_common_info			*init_common_info(int ac, char **av);
-pthread_mutex_t			*init_forks(int number_of_philosophers);
+sem_t					*init_forks(int number_of_philosophers);
 void					init_created_philo(t_philo *p);
 int						start_pthread(t_philo *p);
 void					*sit_at_a_round_table(void *philo);

@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:34:59 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 20:54:05 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,18 +38,15 @@ int					start_pthread(t_philo *p)
 {
 	int				i;
 	int				status;
-	struct timeval	tv;
+	int				pid;
 
 	i = 0;
 	status = 0;
 	while (i < p->info->number_of_philosophers)
 	{
-		if (pthread_create(&(p[i].pthread), NULL, \
-		&sit_at_a_round_table, (void *)&(p[i])) != 0)
-			return (1);
-		gettimeofday(&tv, NULL);
-		p[i].created = change_to_ms(tv);
-		pthread_detach(p[i].pthread);
+		pid = fork();
+		if (pid == 0)
+			sit_at_a_round_table(&p[i]);
 		i++;
 	}
 	if (pthread_create(p->info->monitor, NULL, &monitoring, (void *)p) != 0)

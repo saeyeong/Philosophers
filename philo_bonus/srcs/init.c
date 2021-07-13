@@ -6,41 +6,24 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:33:55 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 20:45:30 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo_bonus.h"
 
-pthread_mutex_t		*init_forks(int num_phi)
+sem_t				*init_forks(int num_phi)
 {
-	pthread_mutex_t	*forks;
-	int				i;
+	sem_t			*forks;
 
-	if (!(forks = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t) * num_phi)))
+	if (!(forks = (sem_t*)malloc(sizeof(sem_t))))
 		return (NULL);
-	i = 0;
-	while (i < num_phi)
+	if (sem_init(forks, 0, num_phi) != 0)
 	{
-		if (pthread_mutex_init(&forks[i], NULL) < 0)
-		{
-			free(forks);
-			return (NULL);
-		}
-		i++;
+		free(forks);
+		return (NULL);
 	}
 	return (forks);
-}
-
-t_common_info		*init_common_mutex(t_common_info *info)
-{
-	if (!(info->print_m = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t))))
-		return (NULL);
-	if (!(info->monitor = (pthread_t *)malloc(sizeof(pthread_t))))
-		return (NULL);
-	if (pthread_mutex_init(info->print_m, NULL) != 0)
-		return (NULL);
-	return (info);
 }
 
 t_common_info		*init_common_info(int ac, char **av)
@@ -58,7 +41,11 @@ t_common_info		*init_common_info(int ac, char **av)
 	else
 		info->limit_of_eat = -1;
 	info->death_philo_count = 0;
-	if (!(init_common_mutex(info)))
+	if (!(info->print_s = (sem_t*)malloc(sizeof(sem_t))))
+		return (NULL);
+	if (!(info->monitor = (pthread_t *)malloc(sizeof(pthread_t))))
+		return (NULL);
+	if (sem_init(info->print_s, 0, 1) != 0)
 		return (NULL);
 	return (info);
 }
@@ -74,7 +61,7 @@ void				init_created_philo(t_philo *p)
 t_philo				*init_philo(t_common_info *info)
 {
 	t_philo			*philo;
-	pthread_mutex_t	*forks;
+	sem_t			*forks;
 	int				i;
 
 	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * info->number_of_philosophers)))
@@ -84,8 +71,6 @@ t_philo				*init_philo(t_common_info *info)
 	i = 0;
 	while (i < info->number_of_philosophers)
 	{
-		philo[i].rfork = &forks[(i + 1) % info->number_of_philosophers];
-		philo[i].lfork = &forks[i];
 		philo[i].eat_num = 0;
 		philo[i].philo_num = i + 1;
 		philo[i].info = info;
