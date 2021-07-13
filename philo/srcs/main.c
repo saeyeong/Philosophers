@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/12 16:57:05 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 20:21:27 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,44 @@ int				check_arg(int ac, char **av)
 	return (0);
 }
 
+int					start_pthread(t_philo *p)
+{
+	int				i;
+	int				status;
+	struct timeval	tv;
+
+	i = 0;
+	status = 0;
+	while (i < p->info->number_of_philosophers)
+	{
+		if (pthread_create(&(p[i].pthread), NULL, \
+		&sit_at_a_round_table, (void *)&(p[i])) != 0)
+			return (1);
+		gettimeofday(&tv, NULL);
+		p[i].created = change_to_ms(tv);
+		pthread_detach(p[i].pthread);
+		i++;
+	}
+	if (pthread_create(p->info->monitor, NULL, &monitoring, (void *)p) != 0)
+		return (1);
+	pthread_detach(*p->info->monitor);
+	pthread_mutex_lock(p->info->check_died);
+	pthread_mutex_unlock(p->info->check_died);
+	return (0);
+}
+
 int				main(int ac, char **av)
 {
-	t_arg			arg;
+	t_common_info	*info;
 	t_philo			*p;
 
 	if (check_arg(ac, av))
 		return (0);
-	arg = init_s_arg(ac, av);
-	if (!(p = init_philo(&arg)))
-		return (exit_error("e: Failed to initialize fork\n"));
-	if (start_philosophers(p))
+	if (!(info = init_common_info(ac, av)))
+		return (exit_error("e: Failed to initialize info\n"));
+	if (!(p = init_philo(info)))
+		return (exit_error("e: Failed to initialize philo\n"));
+	if (start_pthread(p))
 		return (exit_error("e: runtime error\n"));
 	return (0);
 }

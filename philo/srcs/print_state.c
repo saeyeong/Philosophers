@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_state.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:07:27 by ukim              #+#    #+#             */
-/*   Updated: 2021/06/30 16:20:20 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 17:08:47 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void					print_state(t_philo *p, int state)
 	created_ms = p->created;
 	current_ms = now_time();
 	timestamp_ms = current_ms - created_ms;
-	pthread_mutex_lock(p->print_m);
+	pthread_mutex_lock(p->info->print_m);
 	if (state == STATE_FORK)
 		printf("%llu %d has taken a fork\n", timestamp_ms, p->philo_num);
 	else if (state == STATE_EAT)
@@ -58,5 +58,5 @@ void					print_state(t_philo *p, int state)
 		printf("%llu %d died\n", timestamp_ms, p->philo_num);
 		return ;
 	}
-	pthread_mutex_unlock(p->print_m);
+	pthread_mutex_unlock(p->info->print_m);
 }

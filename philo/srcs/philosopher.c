@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:42:36 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/12 16:54:48 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 20:21:20 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ void				eat_spaghetti(t_philo *p)
 
 	time = now_time();
 	print_state(p, STATE_EAT);
-	if (p->arg->limit_of_eat != -1)
-		p->how_many_eat += 1;
+	if (p->info->limit_of_eat != -1)
+		p->eat_num += 1;
 	while (1)
 	{
-		if (calculate_time(time, now_time()) >= p->arg->time_to_eat)
+		if (calculate_time(time, now_time()) >= p->info->time_to_eat)
 			break ;
 		usleep(50);
 	}
@@ -46,39 +46,10 @@ void				sleep_philo(t_philo *p)
 	print_state(p, STATE_SLEEP);
 	while (1)
 	{
-		if (calculate_time(time, now_time()) >= p->arg->time_to_sleep)
+		if (calculate_time(time, now_time()) >= p->info->time_to_sleep)
 			break ;
 		usleep(50);
 	}
-}
-
-void				*monitoring(void *philo)
-{
-	t_philo			*p;
-	int				i;
-	long long		last_meal_ms;
-	struct timeval	time_now;
-
-	p = (t_philo *)philo;
-	usleep(p->arg->time_to_die * 1000);
-	while (1)
-	{
-		i = -1;
-		usleep(50);
-		while (++i < p->arg->number_of_philosophers)
-		{
-			last_meal_ms = change_to_ms(p[i].last_meal);
-			gettimeofday(&time_now, NULL);
-			if (last_meal_ms + p->arg->time_to_die < change_to_ms(time_now))
-			{
-				if (p->arg->death_philo_count != p->arg->number_of_philosophers)
-					print_state(&p[i], STATE_DIED);
-				pthread_mutex_unlock(p->check_died);
-				return ((void*)0);
-			}
-		}
-	}
-	return ((void*)0);
 }
 
 void				*sit_at_a_round_table(void *philo)
@@ -91,10 +62,10 @@ void				*sit_at_a_round_table(void *philo)
 		usleep(15000);
 	while (1)
 	{
-		if (p->arg->limit_of_eat != -1 && \
-		p->arg->limit_of_eat <= p->how_many_eat)
+		if (p->info->limit_of_eat != -1 && \
+		p->info->limit_of_eat <= p->eat_num)
 		{
-			p->arg->death_philo_count++;
+			p->info->death_philo_count++;
 			print_state(p, STATE_EAT_ALL);
 			break ;
 		}
@@ -102,6 +73,35 @@ void				*sit_at_a_round_table(void *philo)
 		eat_spaghetti(p);
 		sleep_philo(p);
 		think_philo(p);
+	}
+	return ((void*)0);
+}
+
+void				*monitoring(void *philo)
+{
+	t_philo			*p;
+	int				i;
+	long long		last_meal_ms;
+	struct timeval	time_now;
+
+	p = (t_philo *)philo;
+	usleep(p->info->time_to_die * 1000);
+	while (1)
+	{
+		i = -1;
+		usleep(50);
+		while (++i < p->info->number_of_philosophers)
+		{
+			last_meal_ms = change_to_ms(p[i].last_meal);
+			gettimeofday(&time_now, NULL);
+			if (last_meal_ms + p->info->time_to_die < change_to_ms(time_now))
+			{
+				if (p->info->death_philo_count != p->info->number_of_philosophers)
+					print_state(&p[i], STATE_DIED);
+				pthread_mutex_unlock(p->info->check_died);
+				return ((void*)0);
+			}
+		}
 	}
 	return ((void*)0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ukim <ukim@student.42seoul.kr>             +#+  +:+       +#+        */
+/*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by ukim              #+#    #+#             */
-/*   Updated: 2021/06/30 16:20:04 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 20:20:12 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,40 @@ pthread_mutex_t		*init_forks(int num_phi)
 	return (forks);
 }
 
-t_arg				init_s_arg(int ac, char **av)
+t_common_info		*init_common_mutex(t_common_info *info)
 {
-	t_arg			arg;
+	if (!(info->print_m = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t))))
+		return (NULL);
+	if (!(info->monitor = (pthread_t *)malloc(sizeof(pthread_t))))
+		return (NULL);
+	if (!(info->check_died = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t))))
+		return (NULL);
+	if (pthread_mutex_init(info->print_m, NULL) != 0)
+		return (NULL);
+	if (pthread_mutex_init(info->check_died, NULL) != 0)
+		return (NULL);
+	pthread_mutex_lock(info->check_died);
+	return (info);
+}
 
-	arg.number_of_philosophers = ft_atoi(av[1]);
-	arg.time_to_die = ft_atoi(av[2]);
-	arg.time_to_eat = ft_atoi(av[3]);
-	arg.time_to_sleep = ft_atoi(av[4]);
+t_common_info		*init_common_info(int ac, char **av)
+{
+	t_common_info	*info;
+
+	if (!(info = (t_common_info*)malloc(sizeof(t_common_info))))
+		return (NULL);
+	info->number_of_philosophers = ft_atoi(av[1]);
+	info->time_to_die = ft_atoi(av[2]);
+	info->time_to_eat = ft_atoi(av[3]);
+	info->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
-		arg.limit_of_eat = ft_atoi(av[5]);
+		info->limit_of_eat = ft_atoi(av[5]);
 	else
-		arg.limit_of_eat = -1;
-	arg.death_philo_count = 0;
-	return (arg);
+		info->limit_of_eat = -1;
+	info->death_philo_count = 0;
+	if (!(init_common_mutex(info)))
+		return (NULL);
+	return (info);
 }
 
 void				init_created_philo(t_philo *p)
@@ -56,56 +76,25 @@ void				init_created_philo(t_philo *p)
 	p->created = change_to_ms(tv);
 }
 
-t_philo				*init_philo(t_arg *arg)
+t_philo				*init_philo(t_common_info *info)
 {
-	int				i;
 	t_philo			*philo;
-	pthread_t		*monitor;
-	pthread_mutex_t	*prin_fork_chdie[3];
-
-	philo = (t_philo *)malloc(sizeof(t_philo) * arg->number_of_philosophers);
-	monitor = (pthread_t *)malloc(sizeof(pthread_t));
-	prin_fork_chdie[2] = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-	prin_fork_chdie[0] = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-	if (!(prin_fork_chdie[1] = init_forks(arg->number_of_philosophers)))
-		return (NULL);
-	if (pthread_mutex_init(prin_fork_chdie[0], NULL) != 0)
-		return (NULL);
-	if (pthread_mutex_init(prin_fork_chdie[2], NULL) != 0)
-		return (NULL);
-	pthread_mutex_lock(prin_fork_chdie[2]);
-	i = -1;
-	while (++i < arg->number_of_philosophers)
-	{
-		philo[i].arg = arg;
-		philo[i].rfork = &(prin_fork_chdie[1][(i + 1) \
-		% arg->number_of_philosophers]);
-		init_philoo(&philo[i], monitor, prin_fork_chdie, i);
-	}
-	return (philo);
-}
-
-int					start_philosophers(t_philo *p)
-{
+	pthread_mutex_t	*forks;
 	int				i;
-	int				status;
-	struct timeval	tv;
 
+	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * info->number_of_philosophers)))
+		return (NULL);
+	if (!(forks = init_forks(info->number_of_philosophers)))
+		return (NULL);
 	i = 0;
-	status = 0;
-	while (i < p->arg->number_of_philosophers)
+	while (i < info->number_of_philosophers)
 	{
-		if (pthread_create(&p[i].pthread, NULL, \
-		&sit_at_a_round_table, (void *)&p[i]) != 0)
-			return (1);
-		gettimeofday(&tv, NULL);
-		p[i].created = change_to_ms(tv);
+		philo[i].rfork = &forks[(i + 1) % info->number_of_philosophers];
+		philo[i].lfork = &forks[i];
+		philo[i].eat_num = 0;
+		philo[i].philo_num = i + 1;
+		philo[i].info = info;
 		i++;
 	}
-	if (pthread_create(p->monitor, NULL, &monitoring, (void *)p) != 0)
-		return (1);
-	pthread_detach(*p->monitor);
-	pthread_mutex_lock(p->check_died);
-	pthread_mutex_unlock(p->check_died);
-	return (0);
+	return (philo);
 }
