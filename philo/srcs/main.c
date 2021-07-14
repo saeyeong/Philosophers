@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:21:27 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 22:06:12 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,45 @@ int				check_arg(int ac, char **av)
 	return (0);
 }
 
+void				*monitoring(void *philo)
+{
+	t_philo			*p;
+	int				i;
+	long long		last_meal_ms;
+	struct timeval	time_now;
+
+	p = (t_philo *)philo;
+	usleep(p->info->time_to_die * 1000);
+	while (1)
+	{
+		i = -1;
+		usleep(50);
+		while (++i < p->info->number_of_philosophers)
+		{
+			last_meal_ms = change_to_ms(p[i].last_meal);
+			gettimeofday(&time_now, NULL);
+			if (last_meal_ms + p->info->time_to_die < change_to_ms(time_now))
+			{
+				if (p->info->death_philo_count != p->info->number_of_philosophers)
+					print_state(&p[i], STATE_DIED);
+				pthread_mutex_unlock(p->info->check_died);
+				return ((void*)0);
+			}
+		}
+	}
+	return ((void*)0);
+}
+
 int					start_pthread(t_philo *p)
 {
 	int				i;
-	int				status;
-	struct timeval	tv;
 
 	i = 0;
-	status = 0;
 	while (i < p->info->number_of_philosophers)
 	{
 		if (pthread_create(&(p[i].pthread), NULL, \
 		&sit_at_a_round_table, (void *)&(p[i])) != 0)
 			return (1);
-		gettimeofday(&tv, NULL);
-		p[i].created = change_to_ms(tv);
 		pthread_detach(p[i].pthread);
 		i++;
 	}

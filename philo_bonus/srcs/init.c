@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:45:30 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 15:35:47 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,30 @@ sem_t				*init_forks(int num_phi)
 {
 	sem_t			*forks;
 
-	if (!(forks = (sem_t*)malloc(sizeof(sem_t))))
-		return (NULL);
-	if (sem_init(forks, 0, num_phi) != 0)
+	sem_unlink("forks");
+	if ((forks = sem_open("forks", O_CREAT, 0777, num_phi)) == SEM_FAILED)
 	{
 		free(forks);
 		return (NULL);
 	}
 	return (forks);
+}
+
+t_common_info		*init_sem(t_common_info *info)
+{
+	sem_unlink("print");
+	if ((info->print_s = sem_open("print", O_CREAT, 0777, 1)) == SEM_FAILED)
+	{
+		free(info->print_s);
+		return (NULL);
+	}
+	sem_unlink("check_die");
+	if ((info->check_die = sem_open("check_die", O_CREAT, 0777, 0)) == SEM_FAILED)
+	{
+		free(info->check_die);
+		return (NULL);
+	}
+	return (info);
 }
 
 t_common_info		*init_common_info(int ac, char **av)
@@ -40,12 +56,13 @@ t_common_info		*init_common_info(int ac, char **av)
 		info->limit_of_eat = ft_atoi(av[5]);
 	else
 		info->limit_of_eat = -1;
-	info->death_philo_count = 0;
 	if (!(info->print_s = (sem_t*)malloc(sizeof(sem_t))))
 		return (NULL);
-	if (!(info->monitor = (pthread_t *)malloc(sizeof(pthread_t))))
+	if (!(info->child_monitor = (pthread_t *)malloc(sizeof(pthread_t))))
 		return (NULL);
-	if (sem_init(info->print_s, 0, 1) != 0)
+	if (!(info->main_monitor = (pthread_t *)malloc(sizeof(pthread_t))))
+		return (NULL);
+	if (!(init_sem(info)))
 		return (NULL);
 	return (info);
 }
@@ -69,6 +86,7 @@ t_philo				*init_philo(t_common_info *info)
 	if (!(forks = init_forks(info->number_of_philosophers)))
 		return (NULL);
 	i = 0;
+	info->forks = forks;
 	while (i < info->number_of_philosophers)
 	{
 		philo[i].eat_num = 0;

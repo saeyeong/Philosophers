@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:07:27 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:27:00 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 21:06:11 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void					print_state(t_philo *p, int state)
 	created_ms = p->created;
 	current_ms = now_time();
 	timestamp_ms = current_ms - created_ms;
-	pthread_mutex_lock(p->info->print_m);
+	sem_wait(p->info->print_s);
 	if (state == STATE_FORK)
 		printf("%llu %d has taken a fork\n", timestamp_ms, p->philo_num);
 	else if (state == STATE_EAT)
@@ -58,5 +58,5 @@ void					print_state(t_philo *p, int state)
 		printf("%llu %d died\n", timestamp_ms, p->philo_num);
 		return ;
 	}
-	pthread_mutex_unlock(p->info->print_m);
+	sem_post(p->info->print_s);
 }

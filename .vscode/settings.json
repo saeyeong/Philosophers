@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.py": "python",
+        "complex": "c",
+        "philo_bonus.h": "c",
+        "philo.h": "c"
+    }
+}

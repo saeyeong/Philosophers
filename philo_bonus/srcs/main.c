@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:54:05 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 15:37:10 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,24 +34,38 @@ int				check_arg(int ac, char **av)
 	return (0);
 }
 
-int					start_pthread(t_philo *p)
+void				kill_all_process(t_philo *p)
 {
 	int				i;
-	int				status;
-	int				pid;
-
+	
 	i = 0;
-	status = 0;
 	while (i < p->info->number_of_philosophers)
 	{
-		pid = fork();
-		if (pid == 0)
-			sit_at_a_round_table(&p[i]);
+		kill(p[i].pid, SIGINT);
 		i++;
 	}
-	if (pthread_create(p->info->monitor, NULL, &monitoring, (void *)p) != 0)
+}
+
+int					start_process(t_philo *p)
+{
+	int				i;
+
+	i = 0;
+	while (i < p->info->number_of_philosophers)
+	{
+		p[i].pid = fork();
+		if (p[i].pid == 0)
+		{
+			sit_at_a_round_table(&p[i]);
+			exit(0);
+		}
+		i++;
+	}
+	if (pthread_create(p->info->main_monitor, NULL, &monitoring_all_child_exit, (void *)p) != 0)
 		return (1);
-	pthread_detach(*p->info->monitor);
+	pthread_detach(*p->info->main_monitor);
+	sem_wait(p->info->check_die);
+	kill_all_process(p);
 	return (0);
 }
 
@@ -66,7 +80,7 @@ int				main(int ac, char **av)
 		return (exit_error("e: Failed to initialize info\n"));
 	if (!(p = init_philo(info)))
 		return (exit_error("e: Failed to initialize philo\n"));
-	if (start_pthread(p))
+	if (start_process(p))
 		return (exit_error("e: runtime error\n"));
 	return (0);
 }

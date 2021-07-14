@@ -1,6 +1,6 @@
 NAME = philo_bonus
 
-SRC = main.c utils.c exit.c init.c print_state.c philosopher.c
+SRC = main.c utils.c exit.c init.c print_state.c philosopher.c monitoring.c
 
 DIR = ./srcs/
 

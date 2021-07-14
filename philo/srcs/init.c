@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:20:12 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 00:04:42 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@ t_common_info		*init_common_mutex(t_common_info *info)
 {
 	if (!(info->print_m = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t))))
 		return (NULL);
-	if (!(info->monitor = (pthread_t *)malloc(sizeof(pthread_t))))
-		return (NULL);
 	if (!(info->check_died = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t))))
 		return (NULL);
 	if (pthread_mutex_init(info->print_m, NULL) != 0)
@@ -64,6 +62,8 @@ t_common_info		*init_common_info(int ac, char **av)
 		info->limit_of_eat = -1;
 	info->death_philo_count = 0;
 	if (!(init_common_mutex(info)))
+		return (NULL);
+	if (!(info->monitor = (pthread_t *)malloc(sizeof(pthread_t))))
 		return (NULL);
 	return (info);
 }

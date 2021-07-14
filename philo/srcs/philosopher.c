@@ -6,11 +6,16 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:42:36 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:21:20 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 21:04:52 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+void		think_philo(t_philo *p)
+{
+	print_state(p, STATE_THINK);
+}
 
 void				take_forks(t_philo *p)
 {
@@ -73,35 +78,6 @@ void				*sit_at_a_round_table(void *philo)
 		eat_spaghetti(p);
 		sleep_philo(p);
 		think_philo(p);
-	}
-	return ((void*)0);
-}
-
-void				*monitoring(void *philo)
-{
-	t_philo			*p;
-	int				i;
-	long long		last_meal_ms;
-	struct timeval	time_now;
-
-	p = (t_philo *)philo;
-	usleep(p->info->time_to_die * 1000);
-	while (1)
-	{
-		i = -1;
-		usleep(50);
-		while (++i < p->info->number_of_philosophers)
-		{
-			last_meal_ms = change_to_ms(p[i].last_meal);
-			gettimeofday(&time_now, NULL);
-			if (last_meal_ms + p->info->time_to_die < change_to_ms(time_now))
-			{
-				if (p->info->death_philo_count != p->info->number_of_philosophers)
-					print_state(&p[i], STATE_DIED);
-				pthread_mutex_unlock(p->info->check_died);
-				return ((void*)0);
-			}
-		}
 	}
 	return ((void*)0);
 }
