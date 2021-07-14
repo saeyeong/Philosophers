@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/14 15:35:47 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:33:51 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ t_common_info		*init_sem(t_common_info *info)
 		return (NULL);
 	}
 	sem_unlink("check_die");
-	if ((info->check_die = sem_open("check_die", O_CREAT, 0777, 0)) == SEM_FAILED)
+	if ((info->check_die = \
+	sem_open("check_die", O_CREAT, 0777, 0)) == SEM_FAILED)
 	{
 		free(info->check_die);
 		return (NULL);
@@ -81,7 +82,8 @@ t_philo				*init_philo(t_common_info *info)
 	sem_t			*forks;
 	int				i;
 
-	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * info->number_of_philosophers)))
+	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * \
+	info->number_of_philosophers)))
 		return (NULL);
 	if (!(forks = init_forks(info->number_of_philosophers)))
 		return (NULL);

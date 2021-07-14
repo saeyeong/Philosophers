@@ -82,7 +82,8 @@ t_philo				*init_philo(t_common_info *info)
 	pthread_mutex_t	*forks;
 	int				i;
 
-	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * info->number_of_philosophers)))
+	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * \
+	info->number_of_philosophers)))
 		return (NULL);
 	if (!(forks = init_forks(info->number_of_philosophers)))
 		return (NULL);

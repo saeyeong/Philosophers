@@ -6,13 +6,13 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:42:36 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 21:04:52 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/13 23:32:57 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void		think_philo(t_philo *p)
+void				think_philo(t_philo *p)
 {
 	print_state(p, STATE_THINK);
 }
@@ -26,7 +26,7 @@ void				take_forks(t_philo *p)
 
 void				eat_spaghetti(t_philo *p)
 {
-	long long	time;
+	long long		time;
 
 	time = now_time();
 	print_state(p, STATE_EAT);
@@ -43,7 +43,7 @@ void				eat_spaghetti(t_philo *p)
 
 void				sleep_philo(t_philo *p)
 {
-	long long	time;
+	long long		time;
 
 	time = now_time();
 	pthread_mutex_unlock(p->lfork);

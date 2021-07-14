@@ -6,16 +6,16 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 22:06:12 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:32:08 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int				check_arg(int ac, char **av)
+int					check_arg(int ac, char **av)
 {
-	int	i;
-	int j;
+	int				i;
+	int				j;
 
 	if (!(ac == 5 || ac == 6))
 		return (exit_error("e: bad arguments\n"));
@@ -53,7 +53,8 @@ void				*monitoring(void *philo)
 			gettimeofday(&time_now, NULL);
 			if (last_meal_ms + p->info->time_to_die < change_to_ms(time_now))
 			{
-				if (p->info->death_philo_count != p->info->number_of_philosophers)
+				if (p->info->death_philo_count != \
+				p->info->number_of_philosophers)
 					print_state(&p[i], STATE_DIED);
 				pthread_mutex_unlock(p->info->check_died);
 				return ((void*)0);
@@ -84,7 +85,7 @@ int					start_pthread(t_philo *p)
 	return (0);
 }
 
-int				main(int ac, char **av)
+int					main(int ac, char **av)
 {
 	t_common_info	*info;
 	t_philo			*p;

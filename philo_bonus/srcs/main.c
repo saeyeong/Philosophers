@@ -12,10 +12,10 @@
 
 #include "../includes/philo_bonus.h"
 
-int				check_arg(int ac, char **av)
+int					check_arg(int ac, char **av)
 {
-	int	i;
-	int j;
+	int				i;
+	int				j;
 
 	if (!(ac == 5 || ac == 6))
 		return (exit_error("e: bad arguments\n"));
@@ -61,7 +61,8 @@ int					start_process(t_philo *p)
 		}
 		i++;
 	}
-	if (pthread_create(p->info->main_monitor, NULL, &monitoring_all_child_exit, (void *)p) != 0)
+	if (pthread_create(p->info->main_monitor, NULL, \
+	&monitoring_all_child_exit, (void *)p) != 0)
 		return (1);
 	pthread_detach(*p->info->main_monitor);
 	sem_wait(p->info->check_die);
@@ -69,7 +70,7 @@ int					start_process(t_philo *p)
 	return (0);
 }
 
-int				main(int ac, char **av)
+int					main(int ac, char **av)
 {
 	t_common_info	*info;
 	t_philo			*p;

@@ -6,13 +6,13 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/26 15:42:36 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/14 16:01:50 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:35:31 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo_bonus.h"
 
-void		think_philo(t_philo *p)
+void				think_philo(t_philo *p)
 {
 	print_state(p, STATE_THINK);
 }
@@ -43,7 +43,7 @@ void				eat_spaghetti(t_philo *p)
 
 void				sleep_philo(t_philo *p)
 {
-	long long	time;
+	long long		time;
 
 	time = now_time();
 	sem_post(p->info->forks);
@@ -63,7 +63,8 @@ void				*sit_at_a_round_table(void *philo)
 
 	p = (t_philo *)philo;
 	init_created_philo(p);
-	if (pthread_create(p->info->child_monitor, NULL, &monitoring_philo_died, (void *)p) != 0)
+	if (pthread_create(p->info->child_monitor, NULL, \
+	&monitoring_philo_died, (void *)p) != 0)
 		return ((void*)0);
 	pthread_detach(*p->info->child_monitor);
 	if (p->philo_num % 2)
