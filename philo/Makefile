@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+         #
+#    By: seapark <seapark@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/15 00:05:21 by seapark           #+#    #+#              #
-#    Updated: 2021/07/15 00:07:34 by ukim             ###   ########.fr        #
+#    Updated: 2021/07/15 00:10:06 by seapark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,10 +15,10 @@ NAME = philo
 SRC = main.c utils.c exit.c init.c print_state.c philosopher.c
 
 DIR = ./srcs/
-uimuim42oulk         
+
 SRCS = $(addprefix $(DIR), $(SRC))
 
-HEADER = includes706uim   
+HEADER = includes
 
 CC = gcc
 
