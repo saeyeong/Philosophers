@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/14 23:32:08 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:38:59 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,13 @@ void				*monitoring(void *philo)
 	{
 		i = -1;
 		usleep(50);
-		while (++i < p->info->number_of_philosophers)
+		while (++i < p->info->num_philo)
 		{
 			last_meal_ms = change_to_ms(p[i].last_meal);
 			gettimeofday(&time_now, NULL);
 			if (last_meal_ms + p->info->time_to_die < change_to_ms(time_now))
 			{
-				if (p->info->death_philo_count != \
-				p->info->number_of_philosophers)
+				if (p->info->death_philo_count != p->info->num_philo)
 					print_state(&p[i], STATE_DIED);
 				pthread_mutex_unlock(p->info->check_died);
 				return ((void*)0);
@@ -69,7 +68,7 @@ int					start_pthread(t_philo *p)
 	int				i;
 
 	i = 0;
-	while (i < p->info->number_of_philosophers)
+	while (i < p->info->num_philo)
 	{
 		if (pthread_create(&(p[i].pthread), NULL, \
 		&sit_at_a_round_table, (void *)&(p[i])) != 0)

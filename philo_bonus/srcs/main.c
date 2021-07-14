@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/14 15:37:10 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:39:09 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ int					check_arg(int ac, char **av)
 void				kill_all_process(t_philo *p)
 {
 	int				i;
-	
+
 	i = 0;
-	while (i < p->info->number_of_philosophers)
+	while (i < p->info->num_philo)
 	{
 		kill(p[i].pid, SIGINT);
 		i++;
@@ -51,7 +51,7 @@ int					start_process(t_philo *p)
 	int				i;
 
 	i = 0;
-	while (i < p->info->number_of_philosophers)
+	while (i < p->info->num_philo)
 	{
 		p[i].pid = fork();
 		if (p[i].pid == 0)

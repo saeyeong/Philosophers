@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:40:42 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/13 20:18:30 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:38:29 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 
 typedef struct			s_common_info
 {
-	int					number_of_philosophers;
+	int					num_philo;
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
@@ -59,7 +59,7 @@ int						ft_isdigit(int c);
 int						exit_error(char const *str);
 t_common_info			*init_common_mutex(t_common_info *info);
 t_common_info			*init_common_info(int ac, char **av);
-pthread_mutex_t			*init_forks(int number_of_philosophers);
+pthread_mutex_t			*init_forks(int num_philo);
 void					init_created_philo(t_philo *p);
 int						start_pthread(t_philo *p);
 void					*sit_at_a_round_table(void *philo);

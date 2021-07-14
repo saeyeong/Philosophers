@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/24 15:13:21 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/14 00:04:42 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:38:29 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ t_common_info		*init_common_info(int ac, char **av)
 
 	if (!(info = (t_common_info*)malloc(sizeof(t_common_info))))
 		return (NULL);
-	info->number_of_philosophers = ft_atoi(av[1]);
+	info->num_philo = ft_atoi(av[1]);
 	info->time_to_die = ft_atoi(av[2]);
 	info->time_to_eat = ft_atoi(av[3]);
 	info->time_to_sleep = ft_atoi(av[4]);
@@ -83,14 +83,14 @@ t_philo				*init_philo(t_common_info *info)
 	int				i;
 
 	if (!(philo = (t_philo *)malloc(sizeof(t_philo) * \
-	info->number_of_philosophers)))
+	info->num_philo)))
 		return (NULL);
-	if (!(forks = init_forks(info->number_of_philosophers)))
+	if (!(forks = init_forks(info->num_philo)))
 		return (NULL);
 	i = 0;
-	while (i < info->number_of_philosophers)
+	while (i < info->num_philo)
 	{
-		philo[i].rfork = &forks[(i + 1) % info->number_of_philosophers];
+		philo[i].rfork = &forks[(i + 1) % info->num_philo];
 		philo[i].lfork = &forks[i];
 		philo[i].eat_num = 0;
 		philo[i].philo_num = i + 1;

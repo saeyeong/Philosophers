@@ -6,7 +6,7 @@
 /*   By: ukim <ukim@42seoul.kr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/23 16:39:59 by ukim              #+#    #+#             */
-/*   Updated: 2021/07/14 15:39:40 by ukim             ###   ########.fr       */
+/*   Updated: 2021/07/14 23:38:29 by ukim             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void				*monitoring_all_child_exit(void *philo)
 	p = (t_philo *)philo;
 	usleep(p->info->time_to_die * 1000);
 	i = 0;
-	while (i < p->info->number_of_philosophers)
+	while (i < p->info->num_philo)
 	{
 		waitpid(p[i].pid, &status, 0);
 		i++;
